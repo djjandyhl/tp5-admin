@@ -15,5 +15,22 @@
   "bugs": {
     "url": "https://github.com/djjandyhl/tp5-admin/issues"
   },
-  "homepage": "https://github.com/djjandyhl/tp5-admin#readme"
+  "homepage": "https://github.com/djjandyhl/tp5-admin#readme",
+  "dependencies": {
+    "element-ui": "^1.0.0-rc.5",
+    "vue": "^2.0.1",
+    "vue-router": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-preset-es2015": "^6.13.2",
+    "cross-env": "^1.0.6",
+    "css-loader": "^0.23.1",
+    "file-loader": "^0.8.5",
+    "style-loader": "^0.13.1",
+    "vue-loader": "^9.5.1",
+    "webpack": "2.1.0-beta.22",
+    "webpack-dev-server": "^2.1.0-beta.0"
+  }
 }
