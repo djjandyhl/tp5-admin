@@ -1,0 +1,19 @@
+{
+  "name": "tp5-admin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djjandyhl/tp5-admin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/djjandyhl/tp5-admin/issues"
+  },
+  "homepage": "https://github.com/djjandyhl/tp5-admin#readme"
+}
