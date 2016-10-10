@@ -22,7 +22,7 @@ cooking.set({
     'src': path.join(__dirname, 'src')
   },
   extends: ['vue2', 'lint', 'autoprefixer'],
-  externals: build.externals()
+  //externals: build.externals()
 });
 
 isProd && cooking.add('output.filename', 'static/[name].[hash:7].js');
