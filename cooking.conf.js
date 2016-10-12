@@ -38,7 +38,8 @@ cooking.set({
   alias: {
     'src': path.join(__dirname, 'src')
   },
-  extends: ['vue2', 'lint', 'saladcss']
+  // extends: ['vue2', 'lint', 'saladcss']
+  extends: ['vue2']
 });
 
 module.exports = cooking.resolve();
