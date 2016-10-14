@@ -1,20 +1,27 @@
 <template>
-  <div >
+  <div>
 
     <el-form :inline="true" :model="search" @submit.native.prevent="onSubmit" class="demo-form-inline">
       <el-form-item>
         <el-input v-model="search.searchText" placeholder="用户名"></el-input>
-      </el-form-item><el-form-item>
-    </el-form-item><el-form-item>
-      <el-button native-type="submit" type="primary">查询</el-button>
-    </el-form-item>
+      </el-form-item>
+      <el-form-item>
+        <el-form-item>
+          <el-select v-model="search.role_id" placeholder="角色">
+            <el-option v-for="role in roles" :label="role.rolename" :value="role.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form-item>
+      <el-form-item>
+        <el-button native-type="submit" type="primary">查询</el-button>
+      </el-form-item>
     </el-form>
     <el-table :data="tableData.data" border style="width: 100%">
-      <el-table-column property="id" label="ID" sortable ></el-table-column>
-      <el-table-column property="username" label="帐号" ></el-table-column>
-      <el-table-column property="real_name" label="姓名" ></el-table-column>
-      <el-table-column property="rolename" label="角色" ></el-table-column>
-      <el-table-column property="status" label="状态" ></el-table-column>
+      <el-table-column property="id" label="ID" sortable></el-table-column>
+      <el-table-column property="username" label="帐号"></el-table-column>
+      <el-table-column property="real_name" label="姓名"></el-table-column>
+      <el-table-column property="rolename" label="角色"></el-table-column>
+      <el-table-column property="status" label="状态"></el-table-column>
       <el-table-column property="last_login_time" label="最后登录时间" sortable></el-table-column>
     </el-table>
     <div class="page-block text-center">
@@ -31,50 +38,49 @@
   </div>
 
 
-
 </template>
 <script>
   export default{
     data() {
       return {
         tableData: {
-          data:[],
-          total:0
+          data: [],
+          total: 0
         },
-        search:{
-          searchText:'',
-          pageNumber:1,
-          pageSize:10
+        search: {
+          searchText: '',
+          role_id:0,
+          pageNumber: 1,
+          pageSize: 10
         },
-        roles:[]
+        roles: []
       }
     },
     methods: {
-      getData:function (flag) {
+      getData: function (flag) {
 
         this.loading = true;
-        if(flag){
+        if (flag) {
           this.search.pageNumber = 1;
         }
-        this.$http.get('user/index',{params:this.search}).then((res) => {
+        this.$http.get('user/index', {params: this.search}).then((res) => {
           this.tableData.data = res.data.rows;
           this.tableData.total = res.data.total;
         })
       },
-      onSubmit:function () {
+      onSubmit: function () {
         this.getData(true)
       },
-      handleSizeChange:function () {
+      handleSizeChange: function () {
         this.getData();
       },
-      handleCurrentChange:function () {
+      handleCurrentChange: function () {
         this.getData();
       }
     },
-    mounted:function () {
-      this.$http.get('user/index',{params:this.search}).then((res) => {
-        this.tableData.data = res.data.rows;
-        this.tableData.total = res.data.total;
+    mounted: function () {
+      this.$http.get('role/index').then((res) => {
+        this.roles = res.data.rows;
       })
       this.getData();
     }

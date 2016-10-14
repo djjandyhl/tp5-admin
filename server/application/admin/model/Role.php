@@ -25,10 +25,10 @@ class Role extends Model
      * @param $offset
      * @param $limit
      */
-    public function getRoleByWhere($where, $offset, $limit)
+    public function getRoleByWhere($where)
     {
 
-        return $this->where($where)->limit($offset, $limit)->order('id desc')->select();
+        return $this->where($where)->order('id desc')->select();
     }
 
     /**
