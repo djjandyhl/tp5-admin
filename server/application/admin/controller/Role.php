@@ -25,24 +25,12 @@ class Role extends Base
 
         $param = input('param.');
 
-        $limit = $param['pageSize'];
-        $offset = ($param['pageNumber'] - 1) * $limit;
-
         $where = [];
         if (isset($param['searchText']) && !empty($param['searchText'])) {
             $where['rolename'] = ['like', '%' . $param['searchText'] . '%'];
         }
         $model = new RoleModel();
-        $selectResult = $model->getRoleByWhere($where, $offset, $limit);
-
-        foreach ($selectResult as $key => $vo) {
-
-            if (1 == $vo['id']) {
-                $selectResult[$key]['operate'] = '';
-                continue;
-            }
-        }
-
+        $selectResult = $model->getRoleByWhere($where);
         $return['total'] = $model->getAllRole($where);  //总数据
         $return['rows'] = $selectResult;
 
