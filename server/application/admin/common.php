@@ -67,11 +67,11 @@ function prepareMenu($param)
 
     foreach($param as $key=>$vo){
 
-        if($vo['typeid'] == 0){
+        if($vo['parent_id'] == 0){
             $vo['href'] = '#';
             $parent[] = $vo;
         }else{
-            $vo['href'] = url($vo['control_name'] .'/'. $vo['action_name']); //跳转地址
+            $vo['href'] = $vo['control_name'] .'/'. $vo['action_name']; //跳转地址
             $child[] = $vo;
         }
     }
@@ -79,7 +79,7 @@ function prepareMenu($param)
     foreach($parent as $key=>$vo){
         foreach($child as $k=>$v){
 
-            if($v['typeid'] == $vo['id']){
+            if($v['parent_id'] == $vo['id']){
                 $parent[$key]['child'][] = $v;
             }
         }

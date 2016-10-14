@@ -11,56 +11,48 @@
 namespace app\admin\controller;
 
 use app\admin\model\Node;
-use app\admin\model\UserType;
+use app\admin\model\Role as RoleModel;
 
 class Role extends Base
 {
+    public function all(){
+        $roles = RoleModel::all();
+        return json($roles);
+    }
     //角色列表
     public function index()
     {
-        if(request()->isAjax()){
 
-            $param = input('param.');
+        $param = input('param.');
 
-            $limit = $param['pageSize'];
-            $offset = ($param['pageNumber'] - 1) * $limit;
+        $limit = $param['pageSize'];
+        $offset = ($param['pageNumber'] - 1) * $limit;
 
-            $where = [];
-            if (isset($param['searchText']) && !empty($param['searchText'])) {
-                $where['rolename'] = ['like', '%' . $param['searchText'] . '%'];
+        $where = [];
+        if (isset($param['searchText']) && !empty($param['searchText'])) {
+            $where['rolename'] = ['like', '%' . $param['searchText'] . '%'];
+        }
+        $model = new RoleModel();
+        $selectResult = $model->getRoleByWhere($where, $offset, $limit);
+
+        foreach ($selectResult as $key => $vo) {
+
+            if (1 == $vo['id']) {
+                $selectResult[$key]['operate'] = '';
+                continue;
             }
-            $user = new UserType();
-            $selectResult = $user->getRoleByWhere($where, $offset, $limit);
-
-            foreach($selectResult as $key=>$vo){
-
-                if(1 == $vo['id']){
-                    $selectResult[$key]['operate'] = '';
-                    continue;
-                }
-
-                $operate = [
-                    '编辑' => url('role/roleEdit', ['id' => $vo['id']]),
-                    '删除' => "javascript:roleDel('".$vo['id']."')",
-                    '分配权限' => "javascript:giveQx('".$vo['id']."')"
-                ];
-                $selectResult[$key]['operate'] = showOperate($operate);
-
-            }
-
-            $return['total'] = $user->getAllRole($where);  //总数据
-            $return['rows'] = $selectResult;
-
-            return json($return);
         }
 
-        return $this->fetch();
+        $return['total'] = $model->getAllRole($where);  //总数据
+        $return['rows'] = $selectResult;
+
+        return json($return);
     }
 
     //添加角色
     public function roleAdd()
     {
-        if(request()->isPost()){
+        if (request()->isPost()) {
 
             $param = input('param.');
             $param = parseParams($param['data']);
@@ -79,7 +71,7 @@ class Role extends Base
     {
         $role = new UserType();
 
-        if(request()->isPost()){
+        if (request()->isPost()) {
 
             $param = input('post.');
             $param = parseParams($param['data']);
@@ -112,13 +104,13 @@ class Role extends Base
         $param = input('param.');
         $node = new Node();
         //获取现在的权限
-        if('get' == $param['type']){
+        if ('get' == $param['type']) {
 
             $nodeStr = $node->getNodeInfo($param['id']);
             return json(['code' => 1, 'data' => $nodeStr, 'msg' => 'success']);
         }
         //分配新权限
-        if('give' == $param['type']){
+        if ('give' == $param['type']) {
 
             $doparam = [
                 'id' => $param['id'],

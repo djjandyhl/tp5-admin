@@ -12,9 +12,12 @@ namespace app\admin\model;
 
 use think\Model;
 
-class UserType extends Model
+class Role extends Model
 {
-    protected  $table = 'snake_role';
+    public function users()
+    {
+        return $this->hasMany('User');
+    }
 
     /**
      * 根据搜索条件获取角色列表信息

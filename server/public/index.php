@@ -10,7 +10,10 @@
 // +----------------------------------------------------------------------
 
 // [ 应用入口文件 ]
-
+header('Access-Control-Allow-Headers:Content-Type,Authorization,X-Requested-With');
+if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
+    exit();
+}
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../application/');
 // 定义应用缓存目录

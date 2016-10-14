@@ -10,7 +10,8 @@
 // +----------------------------------------------------------------------
 namespace app\admin\controller;
 
-use app\admin\model\UserType;
+use app\admin\model\Role;
+use think\Cache;
 use think\Controller;
 use org\Verify;
 
@@ -21,7 +22,7 @@ class Login extends Controller
     {
         return $this->fetch('/login');
     }
-    
+
     //登录操作
     public function doLogin()
     {
@@ -29,50 +30,54 @@ class Login extends Controller
         $password = input("param.password");
         //$result = $this->validate(compact('username', 'password', "code"), 'AdminValidate');
         $result = $this->validate(compact('username', 'password'), 'AdminValidate');
-        if(true !== $result){
+        if (true !== $result) {
             return json(['code' => -5, 'data' => '', 'msg' => $result]);
         }
-        
+
         // $verify = new Verify();
         // if (!$verify->check($code)) {
         //     return json(['code' => -4, 'data' => '', 'msg' => '验证码错误']);
         // }
-        
-        $hasUser = db('user')->where('username', $username)->find();
-        if(empty($hasUser)){
+
+        $hasUser = db('user')->field("id,username,password,status,real_name,role_id,loginnum")->where('username', $username)->find();
+        if (empty($hasUser)) {
             return json(['code' => -1, 'data' => '', 'msg' => '管理员不存在']);
         }
-        
-        if(md5($password) != $hasUser['password']){
+
+        if (md5($password) != $hasUser['password']) {
             return json(['code' => -2, 'data' => '', 'msg' => '密码错误']);
         }
-        
-        if(1 != $hasUser['status']){
+
+        if (1 != $hasUser['status']) {
             return json(['code' => -6, 'data' => '', 'msg' => '该账号被禁用']);
         }
-        
+
         //获取该管理员的角色信息
-        $user = new UserType();
-        $info = $user->getRoleInfo($hasUser['typeid']);
-        
-        session('username', $username);
-        session('id', $hasUser['id']);
-        session('role', $info['rolename']);  //角色名
-        session('rule', $info['rule']);  //角色节点
-        session('action', $info['action']);  //角色权限
-        
+        $user = new Role();
+        $info = $user->getRoleInfo($hasUser['role_id']);
+
+        // session('username', $username);
+        // session('id', $hasUser['id']);
+        // session('role', $info['rolename']);  //角色名
+        // session('rule', $info['rule']);  //角色节点
+        // session('action', $info['action']);  //角色权限
+
         //更新管理员状态
         $param = [
-        'loginnum' => $hasUser['loginnum'] + 1,
-        'last_login_ip' => request()->ip(),
-        'last_login_time' => time()
+            'loginnum' => $hasUser['loginnum'] + 1,
+            'last_login_ip' => request()->ip(),
+            'last_login_time' => time(),
+            'jwt_token' => uniqid()
         ];
-        
+        $info['username'] = $hasUser['username'];
+        $info['realname'] = $hasUser['real_name'];
+        $info['id'] = $hasUser['id'];
+        Cache::set($param['jwt_token'],$info);
+
         db('user')->where('id', $hasUser['id'])->update($param);
-        
-        return json(['code' => 1, 'data' => url('index/index'), 'msg' => '登录成功']);
+        return json(['code' => 1, 'data' => $param['jwt_token'], 'msg' => '登录成功']);
     }
-    
+
     //验证码
     public function checkVerify()
     {
@@ -84,7 +89,7 @@ class Login extends Controller
         $verify->fontSize = 16;
         return $verify->entry();
     }
-    
+
     //退出操作
     public function loginOut()
     {
@@ -93,7 +98,7 @@ class Login extends Controller
         session('role', null);  //角色名
         session('rule', null);  //角色节点
         session('action', null);  //角色权限
-        
+
         $this->redirect(url('index'));
     }
 }

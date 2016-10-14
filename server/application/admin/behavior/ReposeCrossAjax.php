@@ -1,12 +1,16 @@
 <?php
 namespace app\admin\behavior;
 
+use think\Request;
+
 class ReposeCrossAjax
 {
     public function run(&$params)
     {
-        if($params){
-            header('Access-Control-Allow-Headers:  Content-Type,Authorization');
+        $request = new Request();
+        $method = $request->method();
+        if($method == "OPTIONS"){
+            exit();
         }
     }
 }

@@ -12,9 +12,12 @@ namespace app\admin\model;
 
 use think\Model;
 
-class UserModel extends Model
+class User extends Model
 {
-    protected $table = 'snake_user';
+    public function role()
+    {
+        return $this->belongsTo('Role');
+    }
 
     /**
      * 根据搜索条件获取用户列表信息
@@ -24,14 +27,15 @@ class UserModel extends Model
      */
     public function getUsersByWhere($where, $offset, $limit)
     {
-        return $this->field('snake_user.*,rolename')
-            ->join('snake_role', 'snake_user.typeid = snake_role.id')
+        return $this->field('user.id,user.status,user.username,user.real_name,user.loginnum,user.last_login_time,rolename')
+            ->join('role', 'user.role_id = role.id')
             ->where($where)->limit($offset, $limit)->order('id desc')->select();
     }
 
     /**
      * 根据搜索条件获取所有的用户数量
      * @param $where
+     * @return int
      */
     public function getAllUsers($where)
     {
@@ -41,6 +45,7 @@ class UserModel extends Model
     /**
      * 插入管理员信息
      * @param $param
+     * @return array
      */
     public function insertUser($param)
     {
@@ -63,6 +68,7 @@ class UserModel extends Model
     /**
      * 编辑管理员信息
      * @param $param
+     * @return array
      */
     public function editUser($param)
     {
@@ -85,6 +91,7 @@ class UserModel extends Model
     /**
      * 根据管理员id获取角色信息
      * @param $id
+     * @return array|false|\PDOStatement|string|Model
      */
     public function getOneUser($id)
     {
@@ -94,6 +101,7 @@ class UserModel extends Model
     /**
      * 删除管理员
      * @param $id
+     * @return array
      */
     public function delUser($id)
     {

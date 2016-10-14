@@ -11,7 +11,7 @@
 namespace app\admin\controller;
 
 
-use app\admin\Model\UserModel;
+use app\admin\Model\User as UserModel;
 use app\admin\model\UserType;
 
 class User extends Base
@@ -19,49 +19,39 @@ class User extends Base
     //用户列表
     public function index()
     {
-        if(request()->isAjax()){
 
-            $param = input('param.');
 
-            $limit = $param['pageSize'];
-            $offset = ($param['pageNumber'] - 1) * $limit;
+        $param = input('param.');
 
-            $where = [];
-            if (isset($param['searchText']) && !empty($param['searchText'])) {
-                $where['username'] = ['like', '%' . $param['searchText'] . '%'];
-            }
-            $user = new UserModel();
-            $selectResult = $user->getUsersByWhere($where, $offset, $limit);
+        $limit = $param['pageSize'];
+        $offset = ($param['pageNumber'] - 1) * $limit;
 
-            $status = config('user_status');
+        $where = [];
+        if (isset($param['searchText']) && !empty($param['searchText'])) {
+            $where['username'] = ['like', '%' . $param['searchText'] . '%'];
+        }
+        $user = new UserModel();
+        $selectResult = $user->getUsersByWhere($where, $offset, $limit);
 
-            foreach($selectResult as $key=>$vo){
+        $status = config('user_status');
 
-                $selectResult[$key]['last_login_time'] = date('Y-m-d H:i:s', $vo['last_login_time']);
-                $selectResult[$key]['status'] = $status[$vo['status']];
+        foreach ($selectResult as $key => $vo) {
 
-                $operate = [
-                    '编辑' => url('user/userEdit', ['id' => $vo['id']]),
-                    '删除' => "javascript:userDel('".$vo['id']."')"
-                ];
+            $selectResult[$key]['last_login_time'] = date('Y-m-d H:i:s', $vo['last_login_time']);
+            $selectResult[$key]['status'] = $status[$vo['status']];
 
-                $selectResult[$key]['operate'] = showOperate($operate);
-
-            }
-
-            $return['total'] = $user->getAllUsers($where);  //总数据
-            $return['rows'] = $selectResult;
-
-            return json($return);
         }
 
-        return $this->fetch();
+        $return['total'] = $user->getAllUsers($where);  //总数据
+        $return['rows'] = $selectResult;
+
+        return json($return);
     }
 
     //添加用户
     public function userAdd()
     {
-        if(request()->isPost()){
+        if (request()->isPost()) {
 
             $param = input('param.');
             $param = parseParams($param['data']);
@@ -87,13 +77,13 @@ class User extends Base
     {
         $user = new UserModel();
 
-        if(request()->isPost()){
+        if (request()->isPost()) {
 
             $param = input('post.');
             $param = parseParams($param['data']);
-            if(empty($param['password'])){
+            if (empty($param['password'])) {
                 unset($param['password']);
-            }else{
+            } else {
                 $param['password'] = md5($param['password']);
             }
             $flag = $user->editUser($param);
