@@ -71,7 +71,7 @@
     </el-row>
     <el-row class="main-content">
       <el-col :span="3" class="main-content-left">
-        <el-menu :router="true" :default-active="$route.fullPath=='/'?'/user/index':$route.fullPath"
+        <el-menu :router="true" :default-active="$route.fullPath=='/'?'':$route.fullPath"
                  v-if="menus.length>0" class="left-menu" style="height:100%" >
           <el-submenu :index="menu.node_name" v-for="(menu,index) in menus">
             <template slot="title"><i class="el-icon-message"></i>{{ menu.node_name }}</template>
@@ -101,7 +101,7 @@
       return {
         menus: [],
         info: {},
-        activeMenus:['首页','控制台']
+        activeMenus:['首页']
       }
     },
     methods:{

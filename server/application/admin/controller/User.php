@@ -96,7 +96,7 @@ class User extends Base
     }
 
     //删除角色
-    public function UserDel()
+    public function delete()
     {
         $id = input('param.id');
 

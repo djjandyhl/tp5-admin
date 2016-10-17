@@ -26,6 +26,12 @@
       <el-table-column property="status" label="状态"></el-table-column>
       <el-table-column property="loginnum" label="登录次数"></el-table-column>
       <el-table-column property="last_login_time" label="最后登录时间" sortable></el-table-column>
+      <el-table-column inline-template label="操作">
+        <el-button-group>
+          <el-button type="primary"  icon="edit" size="small"></el-button>
+          <el-button type="primary" :disabled="row.id==1" @click.native="rowDelete(row.id)" icon="delete" size="small"></el-button>
+        </el-button-group>
+      </el-table-column>
     </el-table>
     <div class="page-block text-center">
       <el-pagination
@@ -149,6 +155,23 @@
       },
       handleReset: function () {
 
+      },
+      rowDelete:function (id) {
+        this.$confirm('此操作将永久删除该管理员, 是否继续?', '提示', {
+          type: 'warning'
+        }).then(() => {
+          this.$http.post('user/delete', {id:id}).then((res) => {
+            if (res.data.code > 0) {
+              this.$message({
+                type: 'success',
+                message: res.data.msg
+              });
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          })
+
+        })
       }
     },
     mounted: function () {

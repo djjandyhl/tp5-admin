@@ -15,10 +15,6 @@ use app\admin\model\Role as RoleModel;
 
 class Role extends Base
 {
-    public function all(){
-        $roles = RoleModel::all();
-        return json($roles);
-    }
     //角色列表
     public function index()
     {
@@ -81,7 +77,7 @@ class Role extends Base
     {
         $id = input('param.id');
 
-        $role = new UserType();
+        $role = new RoleModel();
         $flag = $role->delRole($id);
         return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
     }

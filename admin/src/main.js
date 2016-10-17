@@ -20,22 +20,7 @@ Vue.http.options.emulateJSON = true;
 if(token && token != null){
   Vue.http.headers.common['Authorization'] =  token;
 }
-// Vue.http.interceptors.push((request, next)  => {
-//
-//   // modify request
-//   request.method = 'POST';
-//
-//   // continue to next interceptor
-//   next((response) => {
-//
-//     if(response.data.status == -1){
-//       app.$router.push('/login')
-//     }else{
-//       return response;
-//     }
-//
-//   });
-// });
+
 
 const router = new VueRouter({
   mode: 'hash',
@@ -55,10 +40,27 @@ router.beforeEach((to, from, next) => {
 
 const app = new Vue({ // eslint-disable-line
   data: {
-    apiRoot: apiRoot
+    apiRoot: apiRoot,
+    httpLoading:false
   },
   router,
   render: h => h(App)
 }).$mount('#app');
 
+Vue.http.interceptors.push((request, next)  => {
 
+  // modify request
+  app.httpLoading = true;
+  console.log('sending....')
+  // continue to next interceptor
+  next((response) => {
+    console.log('over....')
+    app.httpLoading = false;
+    if(response.data.status == -1){
+      app.$router.push('/login')
+    }else{
+      return response;
+    }
+
+  });
+});
