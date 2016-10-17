@@ -28,16 +28,10 @@ class Login extends Controller
     {
         $username = input("param.username");
         $password = input("param.password");
-        //$result = $this->validate(compact('username', 'password', "code"), 'AdminValidate');
         $result = $this->validate(compact('username', 'password'), 'AdminValidate');
         if (true !== $result) {
             return json(['code' => -5, 'data' => '', 'msg' => $result]);
         }
-
-        // $verify = new Verify();
-        // if (!$verify->check($code)) {
-        //     return json(['code' => -4, 'data' => '', 'msg' => '验证码错误']);
-        // }
 
         $hasUser = db('user')->field("id,username,password,status,real_name,role_id,loginnum")->where('username', $username)->find();
         if (empty($hasUser)) {
@@ -55,13 +49,6 @@ class Login extends Controller
         //获取该管理员的角色信息
         $user = new Role();
         $info = $user->getRoleInfo($hasUser['role_id']);
-
-        // session('username', $username);
-        // session('id', $hasUser['id']);
-        // session('role', $info['rolename']);  //角色名
-        // session('rule', $info['rule']);  //角色节点
-        // session('action', $info['action']);  //角色权限
-
         //更新管理员状态
         $param = [
             'loginnum' => $hasUser['loginnum'] + 1,
@@ -72,6 +59,7 @@ class Login extends Controller
         $info['username'] = $hasUser['username'];
         $info['realname'] = $hasUser['real_name'];
         $info['id'] = $hasUser['id'];
+        $info['roleId'] = $hasUser['role_id'];
         Cache::set($param['jwt_token'],$info);
 
         db('user')->where('id', $hasUser['id'])->update($param);
@@ -91,14 +79,13 @@ class Login extends Controller
     }
 
     //退出操作
-    public function loginOut()
+    public function logout()
     {
-        session('username', null);
-        session('id', null);
-        session('role', null);  //角色名
-        session('rule', null);  //角色节点
-        session('action', null);  //角色权限
-
-        $this->redirect(url('index'));
+        $requestHeaders = apache_request_headers() ;
+        $auth = $requestHeaders['Authorization'];
+        if(!empty($auth)){
+            Cache::rm($auth);
+        }
+        return json(['msg'=>'退出成功','status'=>1]);
     }
 }

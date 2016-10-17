@@ -45,7 +45,7 @@
   .main-views {
     background: #ffffff;
     padding: 20px;
-    margin-top: 20px;
+    margin-top: 15px;
   }
 
   .main-content-breadcrumb{
@@ -64,7 +64,7 @@
         <el-menu theme="dark" default-active="1" class="el-menu-demo" mode="horizontal">
           <el-submenu class="top-menu-submenu" index="2">
             <template slot="title">{{info.realname}}</template>
-            <el-menu-item index="1">退出</el-menu-item>
+            <el-menu-item index="1" @click.native="logout">退出</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-col>
@@ -72,19 +72,18 @@
     <el-row class="main-content">
       <el-col :span="3" class="main-content-left">
         <el-menu :router="true" :default-active="$route.fullPath=='/'?'/user/index':$route.fullPath"
-                 v-if="menus.length>0" class="left-menu" style="height:100%" @select="changeMenu" @close="closeMenu">
+                 v-if="menus.length>0" class="left-menu" style="height:100%" >
           <el-submenu :index="menu.node_name" v-for="(menu,index) in menus">
             <template slot="title"><i class="el-icon-message"></i>{{ menu.node_name }}</template>
-            <el-menu-item :index="'/'+item.href" v-for="item in menu.child">{{ item.node_name }}</el-menu-item>
+            <el-menu-item :index="'/'+item.href" @click.native="clickMenu(menu,item)" v-for="item in menu.child">{{ item.node_name }}</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-col>
       <el-col :span="21" class="main-content-right">
-        <div style="margin: 15px;">
+        <div style="margin: 20px;">
           <div class="main-content-breadcrumb">
             <el-breadcrumb separator="/">
-              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-              <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+              <el-breadcrumb-item v-for="node in activeMenus">{{ node }}</el-breadcrumb-item>
             </el-breadcrumb>
           </div>
           <div class="main-views">
@@ -102,15 +101,21 @@
       return {
         menus: [],
         info: {},
-
+        activeMenus:['首页','控制台']
       }
     },
     methods:{
-      changeMenu:function (	index, indexPath) {
-        console.log(index+"---"+indexPath)
+      clickMenu:function (menu,item) {
+        this.activeMenus = [];
+        this.activeMenus.push(menu.node_name);
+        this.activeMenus.push(item.node_name);
       },
-      closeMenu:function (index, indexPath) {
-        console.log(index+"---"+indexPath)
+      logout:function () {
+        this.$http.get('Login/logout').then((res) => {
+          if (res.data.status == 1) {
+             this.$router.push({path:'/login'})
+          }
+        })
       }
     },
     created: function () {

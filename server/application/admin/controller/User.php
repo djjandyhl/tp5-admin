@@ -30,8 +30,8 @@ class User extends Base
         if (isset($param['searchText']) && !empty($param['searchText'])) {
             $where['username'] = ['like', '%' . $param['searchText'] . '%'];
         }
-        if(isset($param['searchText']) && !empty($param['searchText'])){
-
+        if (isset($param['roleId']) && $param['roleId'] > 0) {
+            $where['role_id'] = ['eq', $param['roleId']];
         }
         $user = new UserModel();
         $selectResult = $user->getUsersByWhere($where, $offset, $limit);
@@ -39,10 +39,8 @@ class User extends Base
         $status = config('user_status');
 
         foreach ($selectResult as $key => $vo) {
-
-            $selectResult[$key]['last_login_time'] = date('Y-m-d H:i:s', $vo['last_login_time']);
+            $selectResult[$key]['last_login_time'] = $vo['last_login_time']?date('Y-m-d H:i:s', $vo['last_login_time']):'';
             $selectResult[$key]['status'] = $status[$vo['status']];
-
         }
 
         $return['total'] = $user->getAllUsers($where);  //总数据
@@ -54,25 +52,18 @@ class User extends Base
     //添加用户
     public function userAdd()
     {
-        if (request()->isPost()) {
 
-            $param = input('param.');
-            $param = parseParams($param['data']);
 
-            $param['password'] = md5($param['password']);
-            $user = new UserModel();
-            $flag = $user->insertUser($param);
+        $param = input('post.');
+        //$param = parseParams($param['data']);
 
-            return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
-        }
+        $param['password'] = md5($param['password']);
+        $user = new UserModel();
+        $flag = $user->insertUser($param);
 
-        $role = new UserType();
-        $this->assign([
-            'role' => $role->getRole(),
-            'status' => config('user_status')
-        ]);
+        return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
 
-        return $this->fetch();
+
     }
 
     //编辑角色

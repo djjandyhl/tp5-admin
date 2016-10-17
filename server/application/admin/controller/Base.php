@@ -39,7 +39,7 @@ class Base extends Controller
         $action = $this->request->action();
 
         //跳过登录系列的检测以及主页权限
-        if(!in_array($control, ['login', 'index'])){
+        if(!in_array($control, ['login', 'index']) && $this->admin['roleId']>0){
 
             if(!in_array($control . '/' . $action, $this->admin['action'])){
                 $this->returnJson('','没有权限',0);
