@@ -21,9 +21,10 @@ class Index extends Base
         $menus = $node->getMenu($this->admin['rule']);
         return $this->returnJson(['menus'=>$menus,'info'=>$this->admin]);
     }
-    public function menus()
+    public function nodes()
     {
-
+        $nodesArr = Node::all();
+        $nodes = prepareMenu($nodesArr);
     }
     /**
      * 后台默认首页

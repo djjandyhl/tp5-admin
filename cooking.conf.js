@@ -25,7 +25,7 @@ cooking.set({
   // production
   clean: true,
   hash: true,
-  sourceMap: true,
+  sourceMap: false,
   minimize: true,
   chunk: true, // see https://cookingjs.github.io/zh-cn/configuration.html#chunk
   postcss: [

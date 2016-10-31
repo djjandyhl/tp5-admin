@@ -25,7 +25,7 @@ class Node extends Model
         $result = $this->field('id,node_name,parent_id')->select();
         $str = "";
 
-        $role = new UserType();
+        $role = new Role();
         $rule = $role->getRuleById($id);
 
         if(!empty($rule)){
