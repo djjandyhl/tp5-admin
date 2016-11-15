@@ -5,10 +5,10 @@ cooking.set({
   entry: {
     app: ['babel-polyfill', './admin/src/main.js']
   },
-  dist: './admin/dist',
+  dist: './server/public/dist',
   template: './admin/index.tpl',
 
-  devServer: {
+ /* devServer: {
     port: 8080,
     publicPath: '/',
     stats: 'info',
@@ -20,13 +20,13 @@ cooking.set({
     log: false,
     // 热替换
     hot: true
-  },
+  },*/
 
   // production
   clean: true,
   hash: true,
-  sourceMap: false,
-  minimize: true,
+  sourceMap: true,
+  minimize: false,
   chunk: true, // see https://cookingjs.github.io/zh-cn/configuration.html#chunk
   postcss: [
     // require('...')

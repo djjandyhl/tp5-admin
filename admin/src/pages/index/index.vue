@@ -19,6 +19,13 @@
   }
 
   .top-menu-submenu {
+
+  }
+
+  .my-dropdown{
+    line-height: 60px;
+    color: #c0ccda;
+    margin-right: 10px;
     float: right !important;
   }
 
@@ -48,7 +55,7 @@
     margin-top: 15px;
   }
 
-  .main-content-breadcrumb{
+  .main-content-breadcrumb {
 
   }
 </style>
@@ -61,21 +68,25 @@
         </div>
       </el-col>
       <el-col :span="4">
-        <el-menu theme="dark" default-active="1" class="el-menu-demo" mode="horizontal">
-          <el-submenu class="top-menu-submenu" index="2">
-            <template slot="title">{{info.realname}}</template>
-            <el-menu-item index="1" @click.native="logout">退出</el-menu-item>
-          </el-submenu>
-        </el-menu>
+        <el-dropdown class="my-dropdown">
+          <span class="el-dropdown-link">
+            {{info.realname}}<i class="el-icon-caret-bottom el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="logout">退  出</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-col>
     </el-row>
     <el-row class="main-content">
       <el-col :span="3" class="main-content-left">
         <el-menu :router="true" :default-active="$route.fullPath=='/'?'':$route.fullPath"
-                 v-if="menus.length>0" class="left-menu" style="height:100%" >
+                 v-if="menus.length>0" class="left-menu" style="height:100%">
           <el-submenu :index="menu.node_name" v-for="(menu,index) in menus">
             <template slot="title"><i class="el-icon-message"></i>{{ menu.node_name }}</template>
-            <el-menu-item :index="'/'+item.href" @click.native="clickMenu(menu,item)" v-for="item in menu.child">{{ item.node_name }}</el-menu-item>
+            <el-menu-item :index="'/'+item.href" @click.native="clickMenu(menu,item)" v-for="item in menu.child">{{
+              item.node_name }}
+            </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-col>
@@ -87,7 +98,9 @@
             </el-breadcrumb>
           </div>
           <div class="main-views">
-            <router-view></router-view>
+            <keep-alive>
+              <router-view></router-view>
+            </keep-alive>
           </div>
         </div>
       </el-col>
@@ -101,19 +114,19 @@
       return {
         menus: [],
         info: {},
-        activeMenus:['首页']
+        activeMenus: ['首页']
       }
     },
-    methods:{
-      clickMenu:function (menu,item) {
+    methods: {
+      clickMenu: function (menu, item) {
         this.activeMenus = [];
         this.activeMenus.push(menu.node_name);
         this.activeMenus.push(item.node_name);
       },
-      logout:function () {
+      logout: function () {
         this.$http.get('Login/logout').then((res) => {
           if (res.data.status == 1) {
-             this.$router.push({path:'/login'})
+            this.$router.push({path: '/login'})
           }
         })
       }

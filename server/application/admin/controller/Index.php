@@ -11,7 +11,8 @@
 namespace app\admin\controller;
 
 use app\admin\model\Node;
-
+use think\Db;
+use org\Tree;
 class Index extends Base
 {
     public function index()
@@ -23,8 +24,11 @@ class Index extends Base
     }
     public function nodes()
     {
-        $nodesArr = Node::all();
-        $nodes = prepareMenu($nodesArr);
+        $nodesArr = Db::table('node')->field('id,node_name,parent_id as parentid')->select();
+        $tree = new Tree();
+        $tree->init($nodesArr);
+        $nodes = $tree->get_tree_array_nokey();
+        return $this->returnJson($nodes);
     }
     /**
      * 后台默认首页

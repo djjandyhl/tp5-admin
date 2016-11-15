@@ -36,18 +36,17 @@ class Role extends Base
     //添加角色
     public function roleAdd()
     {
-        if (request()->isPost()) {
 
-            $param = input('param.');
-            $param = parseParams($param['data']);
 
-            $role = new UserType();
-            $flag = $role->insertRole($param);
+        $param['rolename'] = input('post.rolename');
+        $nodes = input('post.nodes/a');
+        $param['rule'] = implode(",",$nodes);
 
-            return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
-        }
+        $role = new RoleModel();
+        $flag = $role->insertRole($param);
 
-        return $this->fetch();
+        return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
+
     }
 
     //编辑角色

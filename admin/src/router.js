@@ -5,6 +5,11 @@ const routConfig = [
     component: require('./pages/index/index.vue'),
     children:[
       {
+        path: '/',
+        name: '用户列表',
+        component: require('./pages/user/index.vue'),
+      },
+      {
         path: '/user/index',
         name: '用户列表',
         component: require('./pages/user/index.vue'),

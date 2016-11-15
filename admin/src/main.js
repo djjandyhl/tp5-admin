@@ -12,7 +12,7 @@ Vue.use(ElementUI);
 Vue.use(VueRouter);
 Vue.use(vueResource);
 
-const apiRoot = 'http://assets.dev/admin';
+const apiRoot = '/admin';
 let token = localStorage.getItem('jwt_token');
 
 Vue.http.options.root = apiRoot;
