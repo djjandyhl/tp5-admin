@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item>
         <el-button native-type="submit" type="primary" icon="search" :loading="loading">查询</el-button>
-        <el-button type="primary" icon="plus" @click.native="dialogFormVisible = true">新增</el-button>
+        <el-button type="primary" icon="plus" @click.native="dialogShow">新增</el-button>
       </el-form-item>
     </el-form>
     <el-table :data="tableData.data" border style="width: 100%">
@@ -92,7 +92,6 @@
           role_id: '',
           password: '',
           real_name: ''
-
         },
         addUserRules: {
           username: [
@@ -135,6 +134,9 @@
       handleCurrentChange: function () {
         this.getData();
       },
+      dialogShow(){
+        this.dialogFormVisible = true;
+      },
       addFormSubmit: function () {
         if (this.addLoading) return;
         this.$refs.form.validate((valid) => {
@@ -172,13 +174,18 @@
           })
 
         })
+      },
+      getRoles(){
+        this.$http.get('role/index').then((res) => {
+          this.roles = res.data.rows;
+        })
       }
     },
-    mounted: function () {
-      this.$http.get('role/index').then((res) => {
-        this.roles = res.data.rows;
-      })
+    created () {
       this.getData();
+    },
+    activated(){
+      this.getRoles();
     }
 
   }

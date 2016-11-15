@@ -1,16 +1,16 @@
 import Vue from 'vue';
+import VueRouter from 'vue-router';
+import vueResource from 'vue-resource';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-default/index.css';
 import './style/main.css';
 import App from './app';
-import VueRouter from 'vue-router';
 import routerConfig from './router';
-import vueResource from 'vue-resource';
 
-
-Vue.use(ElementUI);
 Vue.use(VueRouter);
 Vue.use(vueResource);
+Vue.use(ElementUI);
+
 
 const apiRoot = '/admin';
 let token = localStorage.getItem('jwt_token');
@@ -38,11 +38,7 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-const app = new Vue({ // eslint-disable-line
-  data: {
-    apiRoot: apiRoot,
-    httpLoading:false
-  },
+var app = new Vue({ // eslint-disable-line
   router,
   render: h => h(App)
 }).$mount('#app');
