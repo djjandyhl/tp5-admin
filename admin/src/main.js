@@ -18,7 +18,7 @@ let token = localStorage.getItem('jwt_token');
 Vue.http.options.root = apiRoot;
 Vue.http.options.emulateJSON = true;
 if(token && token != null){
-  Vue.http.headers.common['Authorization'] =  token;
+  Vue.http.headers.common['jwt'] =  token;
 }
 
 
@@ -30,7 +30,7 @@ const router = new VueRouter({
 
 // 检测登录
 router.beforeEach((to, from, next) => {
-
+  let token = localStorage.getItem('jwt_token');
   if (to.path != '/login' && (!token || token === null)) {
     next({path: '/login'})
   } else {

@@ -56,7 +56,7 @@
                   showClose: true
                 });
               } else {
-                Vue.http.headers.common['Authorization'] =  res.data.data;
+                Vue.http.headers.common['jwt'] =  res.data.data;
                 localStorage.setItem('jwt_token', res.data.data);
                 this.$router.push({ path: '/' })
               }
