@@ -36,11 +36,9 @@ class Role extends Base
     //添加角色
     public function roleAdd()
     {
-
-
         $param['rolename'] = input('post.rolename');
         $nodes = input('post.nodes/a');
-        $param['rule'] = implode(",",$nodes);
+        $param['rule'] = implode(",", $nodes);
 
         $role = new RoleModel();
         $flag = $role->insertRole($param);
@@ -52,23 +50,14 @@ class Role extends Base
     //编辑角色
     public function roleEdit()
     {
-        $role = new UserType();
+        $role = new RoleModel();
+        $param['rolename'] = input('post.rolename');
+        $nodes = input('post.nodes/a');
+        $param['rule'] = implode(",", $nodes);
+        $param['id'] = input('post.id/d');
+        $flag = $role->editRole($param);
 
-        if (request()->isPost()) {
-
-            $param = input('post.');
-            $param = parseParams($param['data']);
-
-            $flag = $role->editRole($param);
-
-            return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
-        }
-
-        $id = input('param.id');
-        $this->assign([
-            'role' => $role->getOneRole($id)
-        ]);
-        return $this->fetch();
+        return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
     }
 
     //删除角色
@@ -79,29 +68,5 @@ class Role extends Base
         $role = new RoleModel();
         $flag = $role->delRole($id);
         return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
-    }
-
-    //分配权限
-    public function giveAccess()
-    {
-        $param = input('param.');
-        $node = new Node();
-        //获取现在的权限
-        if ('get' == $param['type']) {
-
-            $nodeStr = $node->getNodeInfo($param['id']);
-            return json(['code' => 1, 'data' => $nodeStr, 'msg' => 'success']);
-        }
-        //分配新权限
-        if ('give' == $param['type']) {
-
-            $doparam = [
-                'id' => $param['id'],
-                'rule' => $param['rule']
-            ];
-            $user = new UserType();
-            $flag = $user->editAccess($doparam);
-            return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
-        }
     }
 }

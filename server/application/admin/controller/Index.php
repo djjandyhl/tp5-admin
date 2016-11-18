@@ -11,8 +11,10 @@
 namespace app\admin\controller;
 
 use app\admin\model\Node;
+use app\admin\model\Role;
 use think\Db;
 use org\Tree;
+
 class Index extends Base
 {
     public function index()
@@ -30,12 +32,8 @@ class Index extends Base
         $nodes = $tree->get_tree_array_nokey();
         return $this->returnJson($nodes);
     }
-    /**
-     * 后台默认首页
-     * @return mixed
-     */
-    public function indexPage()
-    {
-        return $this->fetch('index');
+    public function allRoles(){
+        $roles = Db::table('role')->field("id,rolename")->select();
+        return json($roles);
     }
 }

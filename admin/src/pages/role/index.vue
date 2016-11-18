@@ -15,20 +15,21 @@
       <el-table-column property="rolename" label="角色名"></el-table-column>
       <el-table-column inline-template label="操作">
         <el-button-group>
-          <el-button type="primary" icon="edit" size="small"></el-button>
+          <el-button type="primary" :disabled="row.id==1" icon="edit" @click.native="rowEdit(row)" size="small"></el-button>
           <el-button type="primary" :disabled="row.id==1" @click.native="rowDelete(row.id)" icon="delete" size="small"></el-button>
         </el-button-group>
       </el-table-column>
     </el-table>
 
-    <el-dialog title="新增角色" v-model="dialogFormVisible" size="tiny" open="loadNodes">
+    <el-dialog title="新增角色" v-model="dialogFormVisible" size="tiny" @close="refreshNodes">
       <el-form :model="form" :rules="addRoleRules" ref="form" label-width="100px" style="width: 80%;margin: auto">
         <el-form-item label="角色名" prop="rolename">
           <el-input v-model="form.rolename" :maxlength="16" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="权限" prop="roles">
           <el-tree
-            @check-change="handleCheckChange"
+            @check-change="handleCheckChange" ref="treeele"
+            node-key="id"
             :data="nodes"
             :props="props"
             :show-checkbox="true"
@@ -57,6 +58,7 @@
         addLoading: false,
         dialogFormVisible: false,
         form: {
+          id:0,
           rolename: '',
           nodes: []
         },
@@ -91,18 +93,24 @@
       onSubmit() {
         this.getData(true)
       },
-      handleSizeChange() {
-        this.getData();
-      },
-      handleCurrentChange () {
-        this.getData();
-      },
+//      handleSizeChange() {
+//        this.getData();
+//      },
+//      handleCurrentChange () {
+//        this.getData();
+//      },
       addFormSubmit() {
         if (this.addLoading) return;
         console.log(this.form);
         this.$refs.form.validate((valid) => {
          if (valid) {
-            this.$http.post('role/roleAdd', this.form).then((res) => {
+            let url = "";
+            if(this.form.id>0){
+              url = "role/roleEdit"
+            }else{
+              url = "role/roleAdd";
+            }
+            this.$http.post(url, this.form).then((res) => {
               this.addLoading = false;
               if (res.data.code > 0) {
                 this.dialogFormVisible = false;
@@ -137,15 +145,28 @@
 
         })
       },
+      rowEdit(row){
+
+        this.form.id = row.id;
+        this.form.rolename = row.rolename;
+        let rules = row.rule.split(",");
+        for (var i = 0; i < rules.length; i++) {
+          rules[i] = Number(rules[i]);
+        }
+        this.form.nodes = rules;
+        this.dialogFormVisible = true;
+      },
+      refreshNodes(){
+        this.form.id = 0;
+        this.form.rolename = '';
+        this.form.nodes = [];
+      },
       loadNodes () {
         this.$http.get('index/nodes').then((res) => {
-          console.log(res);
            this.nodes = res.data.data;
         })
       },
       handleCheckChange(data, checked, indeterminate){
-        console.log(data, checked, indeterminate);
-        //this.form.nodes = nodes;
         if(checked){
           this.form.nodes.push(data.id);
         }else{
