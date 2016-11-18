@@ -29,6 +29,7 @@
         <el-form-item label="权限" prop="roles">
           <el-tree
             @check-change="handleCheckChange" ref="treeele"
+            :default-checked-keys="form.nodes"
             node-key="id"
             :data="nodes"
             :props="props"
