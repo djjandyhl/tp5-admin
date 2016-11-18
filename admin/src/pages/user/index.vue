@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item>
         <el-button native-type="submit" type="primary" icon="search" :loading="loading">查询</el-button>
-        <el-button type="primary" icon="plus" @click.native="dialogShow">新增</el-button>
+        <el-button type="primary" icon="plus" @click.native="dialogShow('新增')">新增</el-button>
       </el-form-item>
     </el-form>
     <el-table :data="tableData.data" border style="width: 100%">
@@ -28,7 +28,7 @@
       <el-table-column property="last_login_time" label="最后登录时间" sortable></el-table-column>
       <el-table-column inline-template label="操作">
         <el-button-group>
-          <el-button type="primary"  icon="edit" size="small"></el-button>
+          <el-button type="primary"  icon="edit" size="small" @click.native="dialogShow('编辑',row.id,$index)"></el-button>
           <el-button type="primary" :disabled="row.id==1" @click.native="rowDelete(row.id)" icon="delete" size="small"></el-button>
         </el-button-group>
       </el-table-column>
@@ -44,14 +44,16 @@
         :total="tableData.total">
       </el-pagination>
     </div>
-
-    <el-dialog title="新增管理员" v-model="dialogFormVisible" size="tiny">
+    <el-dialog :title="formName+'管理员'" @close="dialogHide" v-model="dialogFormVisible" size="tiny">
       <el-form :model="form" :rules="addUserRules" ref="form" label-width="100px" style="width: 80%;margin: auto">
         <el-form-item label="帐号" prop="username">
           <el-input v-model="form.username" :maxlength="16" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item v-if="formName=='新增'" label="密码" prop="password">
           <el-input v-model="form.password" type="password" :maxlength="16" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item v-if="formName=='编辑'" label="密码" prop="reset_password">
+          <el-input v-model="form.reset_password" type="password" :maxlength="16" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="真实姓名" prop="real_name">
           <el-input v-model="form.real_name" :maxlength="10" auto-complete="off"></el-input>
@@ -63,8 +65,9 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click.native="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" :loading="addLoading" @click.native="addFormSubmit">提 交</el-button>
+        <el-button @click.native="dialogHide">取 消</el-button>
+        <el-button v-if="formName=='新增'" type="primary" :loading="addLoading" @click.native="addFormSubmit">提 交</el-button>
+        <el-button v-if="formName=='编辑'" type="primary" :loading="addLoading" @click.native="rowEdit">提 交</el-button>
       </span>
     </el-dialog>
   </div>
@@ -72,6 +75,17 @@
 <script>
   export default{
     data() {
+      var validateResetPwd = (rule, value, callback) => {
+        if (value.length>0) {
+          if (value.length < 4 || value.length > 16) {
+            callback(new Error('请输入4-16位密码'));
+          }else {
+            callback();
+          }
+        } else {
+          callback();
+        }
+      };
       return {
         tableData: {
           data: [],
@@ -87,6 +101,7 @@
         loading: false,
         addLoading: false,
         dialogFormVisible: false,
+        formName:'',
         form: {
           username: '',
           role_id: '',
@@ -104,6 +119,9 @@
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'},
             {min: 4, max: 16, message: '请输入4-16位密码', trigger: 'blur'}
+          ],
+          reset_password: [
+            {required: true, validator: validateResetPwd , trigger: 'blur'}
           ],
           real_name: [
             {required: true, message: '请输入管理员姓名', trigger: 'blur'},
@@ -134,8 +152,25 @@
       handleCurrentChange: function () {
         this.getData();
       },
-      dialogShow(){
+      dialogShow(name,id,index){
         this.dialogFormVisible = true;
+        this.formName = name;
+        var admin = this.tableData.data[index];
+        if (name == '编辑' && admin.id == id) {
+          this.form = {
+            id:admin.id,
+            username: admin.username,
+            role_id: admin.role_id,
+            reset_password: '',
+            real_name: admin.real_name
+          };
+        }
+      },
+      dialogHide(){
+        this.dialogFormVisible = false;
+        if (typeof this.form.id != "undefined") {
+          this.form = {username: '', role_id: '', password: '', real_name: ''};
+        }
       },
       addFormSubmit: function () {
         if (this.addLoading) return;
@@ -157,6 +192,31 @@
       },
       handleReset: function () {
 
+      },
+      rowEdit:function () {
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            this.addLoading = true;
+            this.$http.post('user/userEdit', this.form).then((res) => {
+              this.addLoading = false;
+              if (res.data.code > 0) {
+                this.$message({message:res.data.msg,type:'success'});
+                if (res.data.code == 1) {
+                  this.dialogFormVisible = false;
+                  this.$refs.form.resetFields();
+                } else if (res.data.code == 5) {
+                  setTimeout(() => {
+                    this.$router.push({path: '/login'})
+                  },3000)
+                }
+              } else {
+                this.$message.error(res.data.msg);
+              }
+            })
+          } else {
+            return false;
+          }
+        });
       },
       rowDelete:function (id) {
         this.$confirm('此操作将永久删除该管理员, 是否继续?', '提示', {

@@ -27,7 +27,7 @@ class User extends Model
      */
     public function getUsersByWhere($where, $offset, $limit)
     {
-        return $this->field('user.id,user.status,user.username,user.real_name,user.loginnum,user.last_login_time,rolename')
+        return $this->field('user.id,user.status,user.username,user.real_name,user.loginnum,user.last_login_time,rolename,user.role_id')
             ->join('role', 'user.role_id = role.id')
             ->where($where)->limit($offset, $limit)->order('id desc')->select();
     }

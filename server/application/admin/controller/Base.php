@@ -20,13 +20,12 @@ use think\Response;
 
 class Base extends Controller
 {
-    protected $request;
     protected $admin;
     protected $headers = ['Access-Control-Allow-Headers'=>'Content-Type,Authorization,X-Requested-With'];
     public function _initialize()
     {
-        $requestHeaders = apache_request_headers() ;
-        $auth = $requestHeaders['Authorization'];
+        $requestHeaders = $this->request->header();
+        $auth = $requestHeaders['jwt'];
         if(empty($auth)){
             $this->returnJson('','未登录',-1);
         }

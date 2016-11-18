@@ -12,7 +12,7 @@ namespace app\admin\controller;
 
 
 use app\admin\Model\User as UserModel;
-use app\admin\model\UserType;
+use think\Cache;
 
 class User extends Base
 {
@@ -74,25 +74,27 @@ class User extends Base
         if (request()->isPost()) {
 
             $param = input('post.');
-            $param = parseParams($param['data']);
-            if (empty($param['password'])) {
-                unset($param['password']);
+//            $param = parseParams($param['data']);
+            if (empty($param['reset_password'])) {
+                unset($param['reset_password']);
             } else {
-                $param['password'] = md5($param['password']);
+                $param['password'] = md5($param['reset_password']);
+                unset($param['reset_password']);
             }
             $flag = $user->editUser($param);
+            if (isset($param['password']) && $flag['code'] == 1) {
+                $token = Cache::get($param['id']);
+                Cache::rm($token);
+                Cache::rm($param['id']);
 
+                $requestHeaders = apache_request_headers() ;
+                $auth = $requestHeaders['Jwt'];
+                if ($token == $auth) {
+                    return json(['code' => 5, 'data' => '', 'msg' => '修改成功，请重新登录！']);
+                }
+            }
             return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
         }
-
-        $id = input('param.id');
-        $role = new UserType();
-        $this->assign([
-            'user' => $user->getOneUser($id),
-            'status' => config('user_status'),
-            'role' => $role->getRole()
-        ]);
-        return $this->fetch();
     }
 
     //删除角色
