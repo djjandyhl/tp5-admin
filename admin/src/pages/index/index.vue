@@ -84,8 +84,8 @@
                  v-if="menus.length>0" class="left-menu" style="height:100%">
           <el-submenu :index="menu.node_name" v-for="(menu,index) in menus">
             <template slot="title"><i class="el-icon-message"></i>{{ menu.node_name }}</template>
-            <el-menu-item :index="'/'+item.href" @click.native="clickMenu(menu,item)" v-for="item in menu.child">{{
-              item.node_name }}
+            <el-menu-item :index="'/'+item.href" @click.native="clickMenu(menu,item)" v-for="item in menu.child">
+              {{ item.node_name }}
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -136,6 +136,8 @@
         if (res.data.status == 1) {
           this.menus = res.data.data.menus;
           this.info = res.data.data.info;
+        }else if(res.data.status == -1){
+          this.$router.push({path: '/login'})
         }
       })
     }

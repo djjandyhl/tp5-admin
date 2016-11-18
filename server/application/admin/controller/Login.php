@@ -61,7 +61,6 @@ class Login extends Controller
         $info['id'] = $hasUser['id'];
         $info['roleId'] = $hasUser['role_id'];
         Cache::set($param['jwt_token'],$info);
-        Cache::set($info['id'],$param['jwt_token']);
 
         db('user')->where('id', $hasUser['id'])->update($param);
         return json(['code' => 1, 'data' => $param['jwt_token'], 'msg' => '登录成功']);
@@ -85,9 +84,7 @@ class Login extends Controller
         $requestHeaders = $this->request->header();
         $auth = $requestHeaders['jwt'];
         if(!empty($auth)){
-            $admin = Cache::get($auth);
             Cache::rm($auth);
-            Cache::rm($admin['id']);
         }
         return json(['msg'=>'退出成功','status'=>1]);
     }

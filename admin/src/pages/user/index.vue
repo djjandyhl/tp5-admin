@@ -152,7 +152,7 @@
       handleCurrentChange: function () {
         this.getData();
       },
-      dialogShow(name,id,index){
+      dialogShow:function(name,id,index){
         this.dialogFormVisible = true;
         this.formName = name;
         var admin = this.tableData.data[index];
@@ -166,7 +166,7 @@
           };
         }
       },
-      dialogHide(){
+      dialogHide:function(){
         this.dialogFormVisible = false;
         if (typeof this.form.id != "undefined") {
           this.form = {username: '', role_id: '', password: '', real_name: ''};
@@ -201,14 +201,8 @@
               this.addLoading = false;
               if (res.data.code > 0) {
                 this.$message({message:res.data.msg,type:'success'});
-                if (res.data.code == 1) {
-                  this.dialogFormVisible = false;
-                  this.$refs.form.resetFields();
-                } else if (res.data.code == 5) {
-                  setTimeout(() => {
-                    this.$router.push({path: '/login'})
-                  },3000)
-                }
+                this.dialogFormVisible = false;
+                this.$refs.form.resetFields();
               } else {
                 this.$message.error(res.data.msg);
               }

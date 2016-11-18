@@ -82,17 +82,6 @@ class User extends Base
                 unset($param['reset_password']);
             }
             $flag = $user->editUser($param);
-            if (isset($param['password']) && $flag['code'] == 1) {
-                $token = Cache::get($param['id']);
-                Cache::rm($token);
-                Cache::rm($param['id']);
-
-                $requestHeaders = apache_request_headers() ;
-                $auth = $requestHeaders['Jwt'];
-                if ($token == $auth) {
-                    return json(['code' => 5, 'data' => '', 'msg' => '修改成功，请重新登录！']);
-                }
-            }
             return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
         }
     }
