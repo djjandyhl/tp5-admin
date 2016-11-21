@@ -12,6 +12,7 @@ namespace app\admin\controller;
 
 use app\admin\model\Node;
 use app\admin\model\Role as RoleModel;
+use app\admin\model\User;
 
 class Role extends Base
 {
@@ -64,7 +65,10 @@ class Role extends Base
     public function roleDel()
     {
         $id = input('param.id');
-
+        $count = User::count();
+        if($count>0){
+            return json(['code' => 0, 'data' => '', 'msg' => '角色下有用户，不能删除']);
+        }
         $role = new RoleModel();
         $flag = $role->delRole($id);
         return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);

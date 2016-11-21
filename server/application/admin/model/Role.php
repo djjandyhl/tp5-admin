@@ -10,6 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\admin\model;
 
+use think\exception\PDOException;
 use think\Model;
 
 class Role extends Model
@@ -105,7 +106,7 @@ class Role extends Model
             return ['code' => 1, 'data' => '', 'msg' => '删除角色成功'];
 
         }catch( PDOException $e){
-            return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
+            return ['code' => 0, 'data' => '', 'msg' => '删除失败'];
         }
     }
 
